@@ -1,1 +1,33 @@
-Nothing yet
+= Multinode Vagrant Devstack
+
+== Quick start:
+1. Clone repo
+1. make a nodes.yaml. There is an example to go from
+1. run vagrant up
+
+If you are behind a proxy install the vagrant-proxyconf package via vagrant and put the following section in your ~/.vagrant.d/Vagrantfile
+
+[source,ruby]
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+     if ENV["http_proxy"]
+       config.proxy.http     = ENV["http_proxy"]
+     end
+     if ENV["https_proxy"]
+       config.proxy.https    = ENV["https_proxy"]
+     end
+  end
+
+Install cachier to also cache packages and the like for faster installs.
+
+[source,ruby]
+  if Vagrant.has_plugin?("vagrant-cachier")
+    # More info on http://fgrehm.viewdocs.io/vagrant-cachier/usage
+    config.cache.scope = :box
+    config.cache.scope = :box
+
+    config.cache.synced_folder_opts = {
+      type: :nfs,
+      mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+    }
+  end
+end
