@@ -1,0 +1,17 @@
+---
+- name: keystone-idp
+  ram: 4096
+  ip: 192.168.17.100
+  role: keystone-idp
+- name: keystone-sp1
+  ram: 4096
+  ip: 192.168.27.100
+  role: keystone-sp
+- name: keystone-sp2
+  ram: 4096
+  ip: 192.168.37.100
+  role: keystone-sp
+- name: fed-tester
+  role: tester
+  ip: 192.168.17.10
+  ram: 2048

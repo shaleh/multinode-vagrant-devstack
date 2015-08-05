@@ -1,0 +1,16 @@
+---
+- hosts: all-nodes
+  roles:
+    - common
+
+- hosts: keystone-idp
+  roles:
+    - devstack
+
+- hosts: keystone-sp
+  roles:
+    - devstack
+
+- hosts: tester
+  roles:
+    - openstackclient

@@ -1,0 +1,61 @@
+[[local|localrc]]
+GIT_BASE=https://git.openstack.org
+
+# Default passwords
+ADMIN_PASSWORD=password
+MYSQL_PASSWORD=password
+RABBIT_PASSWORD=password
+SERVICE_PASSWORD=password
+SERVICE_TOKEN=password
+
+SCREEN_LOGDIR=/opt/stack/logs
+
+LOGFILE=$DEST/logs/stack.sh.log
+LOGDAYS=2
+
+HOST_IP={{ ansible_eth1.ipv4.address }}
+
+{% if keystone_type in ("idp", "sp") %}
+enable_service key-fed
+{% endif %}
+
+{% if horizon %}
+enable_service horizon
+{% endif %}
+
+{% if neutron %}
+#
+# Enable Neutron
+#
+# https://wiki.openstack.org/wiki/NeutronDevstack
+disable_service n-net
+enable_service q-svc
+enable_service q-agt
+enable_service q-dhcp
+enable_service q-l3
+enable_service q-meta
+enable_service neutron
+{% endif %}
+
+{% if swift %}
+SWIFT_HASH=66a3d6b56c1f479c8b4e70ab5c2000f5
+SWIFT_REPLICAS=1
+SWIFT_DATA_DIR=$DEST/data
+
+# Enable Swift
+enable_service s-proxy
+enable_service s-object
+enable_service s-container
+enable_service s-account
+{% endif %}
+
+
+{% if not security_groups %}
+# Disable security groups entirely
+Q_USE_SECGROUP=False
+LIBVIRT_FIREWALL_DRIVER=nova.virt.firewall.NoopFirewallDriver
+{% endif %}
+
+{% if not tempest %}
+disable_service tempest
+{% endif %}

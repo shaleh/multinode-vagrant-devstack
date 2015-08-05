@@ -1,0 +1,8 @@
+---
+- name: update apt if needed
+  apt:  update_cache=yes cache_valid_time=3600
+  sudo: yes
+
+- name: install git
+  apt: name=git
+  sudo: yes
