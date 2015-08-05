@@ -13,6 +13,7 @@
     - tar
     - python-dev
     - python-pip
+    - python-virtualenv
     - libyaml-dev
     - libffi-dev
     - libssl-dev # for pyOpenSSL
@@ -28,28 +29,14 @@
   file: dest=/opt/stack state=directory mode=0777 owner=vagrant group=vagrant
   sudo: yes
 
-- name: Install pip via easy_install
-  command: easy_install -U pip
-  sudo: yes
+- name: Ensure virtualenv exists
+  command: virtualenv /opt/stack/venv creates=/opt/stack/venv/bin/python
 
-- name: Remove packaged pip
-  apt: name=pip state=absent
-  sudo: yes
+- name: Upgrade pip
+  pip: name=pip virtualenv=/opt/stack/venv state=latest
 
 - name: Update setuptools
-  command: pip install -U setuptools
-  sudo: yes
-
-#- name: Get pip
-#  shell: (cd /opt/stack && wget https://bootstrap.pypa.io/get-pip.py)
-#  args:
-#    creates: /opt/stack/get-pip.py
-#
-#- name: Ensure pip is installed
-#  shell: (cd /opt/stack && python ./get-pip.py)
-#  args:
-#    creates: /usr/local/bin/pip
-#  sudo: yes
+  pip: name=setuptools virtualenv=/opt/stack/venv state=latest
 
 - name: Checkout OpenStack client and depends from Git
   git: repo=https://git.openstack.org/openstack/{{ item }} dest=/opt/stack/{{ item }}
@@ -65,11 +52,24 @@
   git: repo=https://github.com/stackforge/sqlalchemy-migrate dest=/opt/stack/sqlalchemy-migrate
 
 - name: Install sqlalchemy-migrate from git
-  shell: (cd /opt/stack/sqlalchemy-migrate && python setup.py install)
-  sudo: yes
+  shell: (cd /opt/stack/sqlalchemy-migrate && /opt/stack/venv/bin/python setup.py install)
+  # sudo: yes
 
+- name: Ensure requirements are installed
+  pip: requirements=/opt/stack/{{ item }}/requirements.txt
+  args:
+    virtualenv: /opt/stack/venv
+  with_items:
+    - python-keystoneclient
+    - python-cinderclient
+    - python-glanceclient
+    - python-neutronclient
+    - python-novaclient
+    - python-openstackclient
+
+# ORDER IS IMPORTANT!! PBR breaks develop. Requirements must be first!!
 - name: Git Develop for OpenStack components
-  shell: (pip install -r requirements.txt && python setup.py develop)
+  shell: /opt/stack/venv/bin/python setup.py develop
   args:
     chdir: /opt/stack/{{ item }}
   with_items:
@@ -79,4 +79,4 @@
     - python-neutronclient
     - python-novaclient
     - python-openstackclient
-  sudo: yes
+  # sudo: yes
