@@ -52,8 +52,9 @@
   git: repo=https://github.com/stackforge/sqlalchemy-migrate dest=/opt/stack/sqlalchemy-migrate
 
 - name: Install sqlalchemy-migrate from git
-  shell: (cd /opt/stack/sqlalchemy-migrate && /opt/stack/venv/bin/python setup.py install)
-  # sudo: yes
+  command: /opt/stack/venv/bin/python setup.py install
+  args:
+    chdir: /opt/stack/sqlalchemy-migrate
 
 - name: Ensure requirements are installed
   pip: requirements=/opt/stack/{{ item }}/requirements.txt
@@ -69,7 +70,7 @@
 
 # ORDER IS IMPORTANT!! PBR breaks develop. Requirements must be first!!
 - name: Git Develop for OpenStack components
-  shell: /opt/stack/venv/bin/python setup.py develop
+  command: /opt/stack/venv/bin/python setup.py develop
   args:
     chdir: /opt/stack/{{ item }}
   with_items:
@@ -79,4 +80,3 @@
     - python-neutronclient
     - python-novaclient
     - python-openstackclient
-  # sudo: yes
