@@ -1,8 +1,21 @@
 ---
+- name: Add node hostname to facts
+  set_fact:
+    node_details: "{{ openstack_nodes|byattr('name', inventory_hostname)|first }}"
+  sudo: no
+
 - name: update apt if needed
   apt:  update_cache=yes cache_valid_time=3600
   sudo: yes
 
 - name: install git
   apt: name=git
+  sudo: yes
+
+- name: run hostname tool
+  local_action: command ../tools/generate-host-file.rb
+  sudo: no
+
+- name: Hosts file
+  copy: src=etchosts dest=/etc/hosts mode=0644 owner=root group=root
   sudo: yes
