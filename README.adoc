@@ -2,10 +2,11 @@
 
 == Quick start:
 1. Clone repo
-1. make a nodes.yaml. There is an example to go from
+1. make a nodes.yaml. There is an example to go from.
 1. run vagrant up
 
-If you are behind a proxy install the vagrant-proxyconf package via vagrant and put the following section in your ~/.vagrant.d/Vagrantfile
+If you are behind a proxy install the vagrant-proxyconf package via vagrant and put the following section in your ~/.vagrant.d/Vagrantfile. Note, no_proxy
+is handled in the Vagrantfile.
 
 [source,ruby]
   if Vagrant.has_plugin?("vagrant-proxyconf")
