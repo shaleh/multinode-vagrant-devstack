@@ -1,3 +1,5 @@
 *~
+*.pyc
+provisioning/roles/common/files/etchosts
 .vagrant
 vagrant_ansible_inventory_default
