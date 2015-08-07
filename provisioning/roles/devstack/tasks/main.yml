@@ -39,3 +39,4 @@
   shell: ./stack.sh >> /home/vagrant/stack.sh.log 2>&1
   args:
     chdir: /home/vagrant/devstack
+    creates: /home/vagrant/devstack/stack-screenrc
