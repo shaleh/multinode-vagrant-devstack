@@ -1,0 +1,4 @@
+---
+- hosts: keystone-sp
+  roles:
+    - keystone-sp

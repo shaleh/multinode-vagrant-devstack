@@ -26,7 +26,7 @@ nodes = YAML.load_file(nodes_file)
 
 etchosts_template = File.read(template_file)
 
-hosts = nodes.map { |n| [ IPAddr::new(n["ip"]), n["hostname"] ] }.sort
+hosts = nodes["openstack_nodes"].map { |n| [ IPAddr::new(n["ip"]), n["hostname"] ] }.sort
 
 File.open(etchosts_file, "w") do |fp|
     fp.write(etchosts_template)

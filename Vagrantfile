@@ -7,9 +7,16 @@ VAGRANTFILE_API_VERSION = "2"
 require 'yaml'
 require './lib/utils'
 
-nodes = YAML.load_file('nodes.yaml')
+data = YAML.load_file('nodes.yaml')
+nodes = data["openstack_nodes"]
 
 groups = generate_ansible_groups(nodes)
+
+write_host_vars(nodes, "provisioning", 'nodes.yaml')
+write_host_vars(nodes, "post-provisioning", 'nodes.yaml')
+
+write_group_vars(groups, "provisioning", "nodes.yaml")
+write_group_vars(groups, "post-provisioning", "nodes.yaml")
 
 no_proxy_value = ENV["no_proxy"] + "," + make_no_proxy_list(nodes)
 
@@ -37,9 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 ansible.playbook = "provisioning/devstack.yml"
                 ansible.verbose = "vvvv"
                 ansible.groups = groups
-                ansible.extra_vars = {
-                    "openstack_nodes" => nodes,
-                }
+                ansible.extra_vars = "nodes.yaml"
             end
         end
     end

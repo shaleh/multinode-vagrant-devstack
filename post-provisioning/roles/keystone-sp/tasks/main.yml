@@ -1,0 +1,87 @@
+---
+- name: update apt if needed
+  apt:  update_cache=yes cache_valid_time=3600
+  sudo: yes
+
+- name: install shibboleth requirements
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - libapache2-mod-shib2
+  sudo: yes
+
+- name: Copy apache2 federation config file
+  copy:
+  args:
+   src: keystone-federation.conf
+   dest: /etc/apache2/sites-available
+   owner: root
+   group: root
+   mode: 0644
+  sudo: yes
+
+- name: Enable federation site
+  command: a2ensite keystone-federation creates=/etc/apache2/sites-enabled/keystone-federation.conf
+  sudo: yes
+
+- name: Enable required apache2 modules
+  apache2_module: name={{ item }} state=present
+  with_items:
+    - ssl
+    - shib2
+  sudo: yes
+
+- name: generate Shibboleth keys
+  command: shib-keygen -y 5 creates=/etc/shibboleth/sp-key.pem
+  sudo: yes
+
+- name: Copy Shibboleth2.xml
+  template:
+  args:
+    src: shibboleth2.xml.j2
+    dest: /etc/shibboleth/shibboleth2.xml
+    owner: root
+    group: root
+    mode: 0644
+  sudo: yes
+
+- name: Copy attributes map xml
+  copy:
+  args:
+    src: attribute-map.xml
+    dest: /etc/shibboleth/attribute-map.xml
+    owner: root
+    group: root
+    mode: 0644
+  sudo: yes
+
+- name: enable SAML SSO debugging for shibd
+  lineinfile:
+  args:
+    line: "log4j.category.Shibboleth.SSO.SAML2=DEBUG, shibd_log"
+    insertafter: EOF
+    state: present
+    dest: /etc/shibboleth/shibd.logger
+  sudo: yes
+
+- name: uncomment OpenSAML decoder debugging
+  lineinfile: line="log4j.category.OpenSAML.MessageDecoder=DEBUG" regexp="^\s*#?\s*log4j.category.OpenSAML.MessageDecoder=DEBUG" state=present dest=/etc/shibboleth/shibd.logger
+  sudo: yes
+
+- name: uncomment OpenSAML encoding debugging
+  lineinfile: line="log4j.category.OpenSAML.MessageEncoder=DEBUG" regexp="^\s*#?\s*log4j.category.OpenSAML.MessageEncoder=DEBUG" state=present dest=/etc/shibboleth/shibd.logger
+  sudo: yes
+
+- name: Enable keystone federation driver
+  replace: dest=/etc/keystone/keystone.conf regexp="^\s*# Entrypoint for the federation backend driver in the keystone.federation\s*[\n\r]\s*# namespace. \(string value\)\s*[\n\r]\s*#?\s*driver\s*=\s*sql\s*$" replace="# Entrypoint for the federation backend driver in the keystone.federation\n# namespace. (string value)\ndriver = keystone.contrib.federation.backends.sql.Federation"
+  sudo: yes
+
+- name: Update keystone auth section
+  replace: dest=/etc/keystone/keystone.conf regexp="^\s*#\s*Allowed authentication methods. \(list value\)\s*[\n\r]\s*#?\s*methods\s*=\s*\s*external,password,token,oauth1\s*$" replace="# Allowed authentication methods. (list value)\nmethods = external,password,token,saml2\n"
+  sudo: yes
+
+- name: Ensure federation is in the pipeline:api_v3
+  replace: dest=/etc/keystone/keystone-paste.ini regexp="^\s*\[pipeline:api_v3\]\s*[\n\r]\s*#\s*The last item in this pipeline must be service_v3 or an equivalent\s*[\n\r]\s*#\s*application. It cannot be a filter.\s*[\n\r]\s*pipeline\s*=\s*(?!sizelimit url_normalize request_id build_auth_context token_auth admin_token_auth json_body ec2_extension_v3 s3_extension simple_cert_extension revoke_extension federation_extension oauth1_extension endpoint_filter_extension endpoint_policy_extension service_v3)\s[\n\r]" replace="[pipeline:api_v3]\n# The last item in this pipeline must be service_v3 or an equivalent\n# application. It cannot be a filter.\npipeline = sizelimit url_normalize request_id build_auth_context token_auth admin_token_auth json_body ec2_extension_v3 s3_extension simple_cert_extension revoke_extension federation_extension oauth1_extension endpoint_filter_extension endpoint_policy_extension service_v3\n"
+  sudo: yes
+
+- name: Ensure federation tables exist
+  command: keystone-manage db_sync --extension federation
