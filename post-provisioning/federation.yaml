@@ -1,4 +1,10 @@
 ---
+- hosts: keystone-idp
+  roles:
+    - keystone-federation
+    - keystone-idp
+
 - hosts: keystone-sp
   roles:
+    - keystone-federation
     - keystone-sp

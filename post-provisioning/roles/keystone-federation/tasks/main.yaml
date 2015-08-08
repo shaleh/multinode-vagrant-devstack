@@ -1,0 +1,12 @@
+---
+- name: Enable keystone federation driver
+  replace: dest=/etc/keystone/keystone.conf regexp="^\s*# Entrypoint for the federation backend driver in the keystone.federation\s*[\n\r]\s*# namespace. \(string value\)\s*[\n\r]\s*#?\s*driver\s*=\s*sql\s*$" replace="# Entrypoint for the federation backend driver in the keystone.federation\n# namespace. (string value)\ndriver = keystone.contrib.federation.backends.sql.Federation"
+  sudo: yes
+
+- name: Update keystone auth section
+  replace: dest=/etc/keystone/keystone.conf regexp="^\s*#\s*Allowed authentication methods. \(list value\)\s*[\n\r]\s*#?\s*methods\s*=\s*\s*external,password,token,oauth1\s*$" replace="# Allowed authentication methods. (list value)\nmethods = external,password,token,saml2\n"
+  sudo: yes
+
+- name: add SAML2 to auth section
+  lineinfile: dest=/etc/keystone/keystone.conf insertafter="^\s*methods = external,password,token,saml2\s*$" line="saml2 = keystone.auth.plugins.mapped.Mapped" state=present
+  sudo: yes
