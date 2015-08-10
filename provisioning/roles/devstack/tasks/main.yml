@@ -1,22 +1,4 @@
 ---
-- name: make apache2 ssl dir
-  file: path=/etc/apache2/ssl owner=root group=root mode=0644 state=directory
-  sudo: yes
-
-- name: make apache2 ssl key
-  shell: openssl req -nodes -newkey rsa:2048 -keyout apache.key -out apache.csr -subj "/C=US/ST=CA/L=Sunnyvale/O=DevStack Testing/OU=OpenStack Dev/CN={{ ansible_eth1.ipv4.address }}"
-  args:
-    chdir: /etc/apache2/ssl
-    creates: /etc/apache2/ssl/apache.csr
-  sudo: yes
-
-- name: make apache2 ssl self signed cert
-  shell: openssl x509 -req -days 3650 -in apache.csr -signkey apache.key -out apache.cer
-  args:
-    chdir: /etc/apache2/ssl
-    creates: /etc/apache2/ssl/apache.cer
-  sudo: yes
-
 - name: checkout devstack
   git:
   args:

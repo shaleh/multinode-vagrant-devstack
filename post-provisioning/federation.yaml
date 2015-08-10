@@ -3,6 +3,8 @@
   roles:
     - keystone-federation
     - keystone-idp
+  vars_files:
+    - vars/keystone_idp_vars.yaml
 
 - hosts: keystone-sp
   roles:
