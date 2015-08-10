@@ -13,7 +13,7 @@ SCREEN_LOGDIR=/opt/stack/logs
 LOGFILE=$DEST/logs/stack.sh.log
 LOGDAYS=2
 
-SERVICE_HOST={{ node_details.hostname }}
+SERVICE_HOST={{ node_hostname }}
 HOST_IP={{ ansible_eth1.ipv4.address }}
 
 {% if keystone_type in ("idp", "sp") %}
