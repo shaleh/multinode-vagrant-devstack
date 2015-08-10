@@ -1,0 +1,9 @@
+---
+idp_organization_name: Devstack Federation Testing
+idp_organization_display_name: Devstack Federation Testing
+idp_organization_url: http://www.example.com
+idp_contact_company: Example Dev, Inc.
+idp_contact_name: Bob
+idp_contact_surname: Developer
+idp_contact_email: bob_developer@example.com
+idp_contact_type: technical

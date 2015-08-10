@@ -1,0 +1,31 @@
+---
+- hosts: all-nodes
+  tasks:
+    - name: Place shared private key
+      copy: >
+        src=shared_id_rsa
+        dest=/home/vagrant/.ssh/id_rsa
+        mode=0600
+        owner=vagrant
+        group=vagrant
+    - name: Setup authorized_keys
+      lineinfile: >
+        dest=/home/vagrant/.ssh/id_rsa.pub
+        regexp="^ssh-rsa .+ vagrant@{{ node_hostname }}"
+        line="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbc+jxaRbDRmGP6erap2ZlCCuCvIMv0yUEpI10i33jw+QXpYwdgsmwN0LqO04yvo04DxIV68WFm4zh/jpV4g/V/M/s2tvOTSncIfaRVBD94vpRMYLbMxYW7psv6d2gPNlS/r482wal7Z+50u8zAQ241jvRb0MRyFmNMp8FX0A6OKrNa3DuEleHZZBsi7QkHXSKY6fOwmppjEoJ+AR1reDxG/y68KQ7aCOJT318o0uC7ewmWexJYEJ+979U8k6prTM3rzhS5k0o6wtIlw3OpQfZSJtCwdb8VhEAuOrW+PnkY0vIH5gLyAM4GOEcA06fUrsBZepSMnLb+hJ97zaeA96N vagrant@{{ node_hostname }}"
+        mode=0600
+        owner=vagrant
+        group=vagrant
+        state=present
+        create=yes
+    - name: Setup authorized_keys
+      lineinfile: >
+        dest=/home/vagrant/.ssh/authorized_keys
+        insertafter="^ssh-rsa .+ vagrant@vagrant-ubuntu-trusty-64"
+        line="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbc+jxaRbDRmGP6erap2ZlCCuCvIMv0yUEpI10i33jw+QXpYwdgsmwN0LqO04yvo04DxIV68WFm4zh/jpV4g/V/M/s2tvOTSncIfaRVBD94vpRMYLbMxYW7psv6d2gPNlS/r482wal7Z+50u8zAQ241jvRb0MRyFmNMp8FX0A6OKrNa3DuEleHZZBsi7QkHXSKY6fOwmppjEoJ+AR1reDxG/y68KQ7aCOJT318o0uC7ewmWexJYEJ+979U8k6prTM3rzhS5k0o6wtIlw3OpQfZSJtCwdb8VhEAuOrW+PnkY0vIH5gLyAM4GOEcA06fUrsBZepSMnLb+hJ97zaeA96N vagrant@{{ item.hostname }}"
+        mode=0600
+        owner=vagrant
+        group=vagrant
+        state=present
+        create=yes
+      with_items: openstack_nodes
