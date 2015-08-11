@@ -10,7 +10,7 @@
                          REMOTE_USER="eppn persistent-id targeted-id">
 
         <Sessions lifetime="28800" timeout="3600" relayState="ss:mem"
-                  checkAddress="false" handlerSSL="false" cookieProps="http">
+                  checkAddress="false" handlerSSL="true" cookieProps="http">
 
             <!--
             Configures SSO for a default IdP. To allow for >1 IdP, remove
@@ -47,16 +47,6 @@ entityID="https:// keystone_idp_hostname /v3/OS-FEDERATION/saml2/idp"
             styleSheet="/shibboleth-sp/main.css"/>
 
         <MetadataProvider type="Chaining">
-{#
-        {% for idp in known_idps %}
-          {% for data in openstack_nodes|byattr("name", idp) %}
-          <MetadataProvider type="XML" file="/etc/shibboleth/idp-{{ data.hostname }}.xml"/>
-          {% endfor %}
-        {% endfor %}
-#}
-{#
-This is the same as above without the useless second loop. But I get a message saying hostname is not in the dict_object. Clearly it is. Not sure why. If I remove the first|attr() the dict is printed and sure enough the hostname key/value is there.
-#}
         {% for idp in known_idps %}
           <MetadataProvider type="XML" file="/etc/shibboleth/idp-{{ openstack_nodes|byattr("name", idp)|first|lookup("hostname") }}.xml"/>
         {% endfor %}
