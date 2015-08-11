@@ -3,8 +3,10 @@
 provisioning/roles/common/files/etchosts
 .vagrant
 vagrant_ansible_inventory_default
+nodes.yaml
 post-provisioning/group_vars
 post-provisioning/host_vars
 post-provisioning/vars/keystone_idp_vars.yaml
 provisioning/group_vars
 provisioning/host_vars
+provisioning/vars/common.yaml

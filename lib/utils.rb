@@ -24,7 +24,15 @@ end
 def write_out_host_var(fp, node)
     puts "Writing host_var: %s" % [node["name"]]
 
-    data = { "node_hostname" => node["hostname"] }
+    data = {
+        "node_hostname" => node["hostname"],
+    }
+    if node["cloud"]
+        data["node_cloud"] = node["cloud"]
+    elsif node["role"] != "tester"
+        puts "Must define 'cloud'"
+        exit 1
+    end
 
     fp.write("# Generated, do not edit\n")
     YAML.dump(data, fp)

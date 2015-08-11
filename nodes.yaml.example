@@ -1,21 +1,25 @@
 ---
-- name: keystone-idp
-  ram: 4096
-  ip: 192.168.17.100
-  role: keystone-idp
-  hostname: idp.sub1.example.com
-- name: fed-tester
-  role: tester
-  ip: 192.168.17.10
-  ram: 2048
-  hostname: fed-tester.sub1.example.com
-- name: keystone-sp1
-  ram: 4096
-  ip: 192.168.27.100
-  role: keystone-sp
-  hostname: sp.sub2.example.com
-- name: keystone-sp2
-  ram: 4096
-  ip: 192.168.37.100
-  role: keystone-sp
-  hostname: sp.sub3.example.com
+openstack_nodes:
+  - name: keystone-idp
+    ram: 4096
+    ip: 192.168.17.100
+    role: keystone-idp
+    hostname: idp.sub1.example.com
+    cloud: AA
+  - name: fed-tester
+    role: tester
+    ip: 192.168.17.10
+    ram: 2048
+    hostname: fed-tester.sub1.example.com
+  - name: keystone-sp1
+    ram: 4096
+    ip: 192.168.27.100
+    role: keystone-sp
+    hostname: sp.sub2.example.com
+    cloud: BB
+  - name: keystone-sp2
+    ram: 4096
+    ip: 192.168.37.100
+    role: keystone-sp
+    hostname: sp.sub3.example.com
+    cloud: CC

@@ -2,6 +2,8 @@
 - hosts: all-nodes
   roles:
     - common
+  vars_files:
+    - vars/common.yaml
 
 - hosts: keystone-idp
   roles:

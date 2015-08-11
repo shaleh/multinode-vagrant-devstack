@@ -1,0 +1,2 @@
+preferred_ntp_server: ntp.example.com
+preferred_timezone: America/Los_Angeles
