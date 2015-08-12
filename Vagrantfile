@@ -41,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
             node.vm.provision :ansible do |ansible|
                 ansible.host_key_checking = false
-                ansible.playbook = "provisioning/devstack.yml"
+                ansible.playbook = "provisioning/devstack.yaml"
                 ansible.verbose = "vvvv"
                 ansible.groups = groups
                 ansible.extra_vars = "nodes.yaml"

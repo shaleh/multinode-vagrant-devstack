@@ -48,13 +48,11 @@ def write_out_group_var(fp, group, groups)
         data = {
             "keystone_type" => "idp",
             "federate_with" => "shibboleth",
-            "known_sps" => groups["keystone-sp"],
         }
     when "keystone-sp"
         data = {
             "keystone_type" => "sp",
             "federate_with" => "shibboleth",
-            "known_idps" => groups["keystone-idp"],
         }
     else
         ;  # Nothing yet

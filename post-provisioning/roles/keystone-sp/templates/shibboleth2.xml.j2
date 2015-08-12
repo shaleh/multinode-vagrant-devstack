@@ -47,10 +47,9 @@ entityID="https:// keystone_idp_hostname /v3/OS-FEDERATION/saml2/idp"
             styleSheet="/shibboleth-sp/main.css"/>
 
         <MetadataProvider type="Chaining">
-        {% for idp in known_idps %}
-          <MetadataProvider type="XML" file="/etc/shibboleth/idp-{{ openstack_nodes|byattr("name", idp)|first|lookup("hostname") }}.xml"/>
+        {% for idp in openstack_nodes|byattr("role", "keystone-idp") %}
+          <MetadataProvider type="XML" file="/etc/shibboleth/idp-{{ idp.hostname }}.xml"/>
         {% endfor %}
-{#|attr("hostname")#}
         </MetadataProvider>
 
         <!-- Map to extract attributes from SAML assertions. -->
