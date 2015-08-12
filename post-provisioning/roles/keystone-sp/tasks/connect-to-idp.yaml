@@ -1,20 +1,17 @@
 ---
-- hosts: keystone-sp
-  tasks:
-    - name: copy metadata
-      command: "scp vagrant@{{ item.hostname }}:/etc/keystone/saml2_idp_metadata.xml /etc/shibboleth/idp-{{ item.hostname }}.xml"
-      args:
-        creates: "/etc/shibboleth/idp-{{ item.hostname }}.xml"
-      with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
-      sudo: yes
+- name: copy metadata
+  command: "scp vagrant@{{ item.hostname }}:/etc/keystone/saml2_idp_metadata.xml /etc/shibboleth/idp-{{ item.hostname }}.xml"
+    creates: "/etc/shibboleth/idp-{{ item.hostname }}.xml"
+  with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
+  sudo: yes
 
-    - name: register SP
-      uri:
-         url: "http://{{ item.hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ node_cloud }}"
-         method: PUT
-         body: "{ \"service_provider\": {\"auth_url\": \"http://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ node_cloud }}/protocols/saml2/auth\", \"sp_url\": \"https://{{ node_hostname }}:5000/Shibboleth.sso/SAML2/ECP\", \"enabled\": true} }"
-         body_format: json
-         HEADER_X-Auth-Token: "password"
-         HEADER_Content-Type: "application/json"
-         status_code: 201
-      with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
+- name: register SP
+  uri:
+     url: "http://{{ item.hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ node_cloud }}"
+     method: PUT
+     body: "{ \"service_provider\": {\"auth_url\": \"http://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ node_cloud }}/protocols/saml2/auth\", \"sp_url\": \"https://{{ node_hostname }}:5000/Shibboleth.sso/SAML2/ECP\", \"enabled\": true} }"
+     body_format: json
+     HEADER_X-Auth-Token: "password"
+     HEADER_Content-Type: "application/json"
+     status_code: 201
+  with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
