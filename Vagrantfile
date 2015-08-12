@@ -12,11 +12,13 @@ nodes = data["openstack_nodes"]
 
 groups = generate_ansible_groups(nodes)
 
-write_host_vars(nodes, "provisioning", 'nodes.yaml')
-write_host_vars(nodes, "post-provisioning", 'nodes.yaml')
+writer = VarsWriter.new(verbose=false)
 
-write_group_vars(groups, "provisioning", "nodes.yaml")
-write_group_vars(groups, "post-provisioning", "nodes.yaml")
+writer.write_host_vars(nodes, "provisioning", 'nodes.yaml')
+writer.write_host_vars(nodes, "post-provisioning", 'nodes.yaml')
+
+writer.write_group_vars(groups, "provisioning", "nodes.yaml")
+writer.write_group_vars(groups, "post-provisioning", "nodes.yaml")
 
 no_proxy_value = ENV["no_proxy"] + "," + make_no_proxy_list(nodes)
 

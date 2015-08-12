@@ -11,8 +11,9 @@ nodes = YAML.load_file(nodes_file)
 
 groups = generate_ansible_groups(nodes["openstack_nodes"])
 
-write_host_vars(nodes["openstack_nodes"], "provisioning", nodes_file)
-write_host_vars(nodes["openstack_nodes"], "post-provisioning", nodes_file)
+writer = VarsWriter(verbose=true)
+writer.write_host_vars(nodes["openstack_nodes"], "provisioning", nodes_file)
+writer.write_host_vars(nodes["openstack_nodes"], "post-provisioning", nodes_file)
 
-write_group_vars(groups, "provisioning", nodes_file)
-write_group_vars(groups, "post-provisioning", nodes_file)
+writer.write_group_vars(groups, "provisioning", nodes_file)
+writer.write_group_vars(groups, "post-provisioning", nodes_file)
