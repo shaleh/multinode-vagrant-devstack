@@ -1,0 +1,18 @@
+---
+- hosts: all-nodes
+  roles:
+    - common
+
+- hosts: keystone-idp
+  tasks:
+    - keystone-federation
+    - keystone-idp
+  vars_files:
+    - vars/keystone_idp_vars.yaml
+
+- hosts: keystone-sp
+  roles:
+    - keystone-federation
+    - keystone-sp
+  tasks:
+    - include roles/keystone-sp/connect-to-idp.yaml
