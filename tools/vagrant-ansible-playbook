@@ -1,23 +1,7 @@
 #!/bin/sh
 
-machine=$1
-if [ -z "$machine" ]; then
-   echo "Must specify a machine"
-   exit 1
-fi
-shift
-
-playbook=$1
-if [ -z "$playbook" ]; then
-    echo "Must specify a playbook"
-    exit 1
-elif [ ! -f "$playbook" ]; then
-    echo "Playbook does not exist"
-    exit 1
-fi
-
 INVENTORY_FILE=.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
-PRIVATE_KEY=.vagrant/machines/$machine/virtualbox/private_key
+PRIVATE_KEY=~/.vagrant.d/insecure_private_key
 ANSIBLE_USER=vagrant
 
-ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_FORCE_COLOR=true ANSIBLE_SSH_ARGS='-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --user=$ANSIBLE_USER --connection=ssh --timeout=30 --limit="$machine" --inventory-file=$INVENTORY_FILE --extra-vars=@nodes.yaml -vvvv "$playbook"
+ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_FORCE_COLOR=true ANSIBLE_SSH_ARGS='-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --user=$ANSIBLE_USER --connection=ssh --private-key="$PRIVATE_KEY" --timeout=30 --inventory-file=$INVENTORY_FILE --extra-vars=@nodes.yaml -vvvv "$@"
