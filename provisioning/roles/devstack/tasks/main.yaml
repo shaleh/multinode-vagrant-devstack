@@ -1,24 +1,32 @@
 ---
 - name: checkout devstack
   git:
-  args:
     repo: "{{ devstack_repo }}"
     dest: /home/vagrant/devstack
     version: "{{ version }}"
-    accept_hostkey: yes
 
 - name: local.conf
-  template: src=local.conf.j2 dest=/home/vagrant/devstack/local.conf
+  template:
+    src: local.conf.j2
+    dest: /home/vagrant/devstack/local.conf
 
 - name: source openrc in profile
   lineinfile:
-  args:
     dest: /home/vagrant/.profile
     regexp: ".*openrc"
     line: '. /home/vagrant/devstack/openrc'
+
+- name: place bootstrap script
+  template:
+    src: bootstrap-keystone.sh.j2
+    dest: /home/vagrant/bootstrap-keystone.sh
+    mode: 0755
 
 - name: run devstack
   shell: ./stack.sh >> /home/vagrant/stack.sh.log 2>&1
   args:
     chdir: /home/vagrant/devstack
     creates: /home/vagrant/devstack/stack-screenrc
+
+- name: bootstrap keystone
+  command: /home/vagrant/bootstrap-keystone.sh
