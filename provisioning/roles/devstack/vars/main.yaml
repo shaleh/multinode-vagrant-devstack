@@ -2,6 +2,7 @@
 devstack_repo: https://github.com/openstack-dev/devstack.git
 #devstack_repo: /vagrant/child-repos/devstack
 version: master
+openstack_token: password
 neutron: False
 swift: True
 security_groups: False
