@@ -4,7 +4,7 @@
     - common
 
 - hosts: keystone-idp
-  tasks:
+  roles:
     - keystone-federation
     - keystone-idp
   vars_files:
@@ -15,4 +15,9 @@
     - keystone-federation
     - keystone-sp
   tasks:
-    - include roles/keystone-sp/connect-to-idp.yaml
+    - include: roles/keystone-sp/tasks/connect-to-idp.yaml
+
+# Call IdPs again, register the SPs using REST API
+- hosts: keystone-idp
+  tasks:
+    - include: roles/keystone-idp/tasks/register-sp.yaml
