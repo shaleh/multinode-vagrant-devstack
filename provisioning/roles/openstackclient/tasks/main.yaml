@@ -1,6 +1,6 @@
 ---
 - name: Ensure dependencies are met
-  apt: pkg={{ item }} state=latest
+  apt: pkg={{ item }} state=present
   with_items:
     - build-essential
     - unzip
@@ -26,20 +26,35 @@
   sudo: yes
 
 - name: Ensure stack dir exists
-  file: dest=/opt/stack state=directory mode=0777 owner=vagrant group=vagrant
+  file:
+    dest: /opt/stack
+    state: directory
+    mode: 0777
+    owner: vagrant
+    group: vagrant
   sudo: yes
 
 - name: Ensure virtualenv exists
-  command: virtualenv /opt/stack/venv creates=/opt/stack/venv/bin/python
+  command: virtualenv /opt/stack/venv
+  args:
+    creates: /opt/stack/venv/bin/python
 
 - name: Upgrade pip
-  pip: name=pip virtualenv=/opt/stack/venv state=latest
+  pip:
+    name: pip
+    virtualenv: /opt/stack/venv
+    state: latest
 
 - name: Update setuptools
-  pip: name=setuptools virtualenv=/opt/stack/venv state=latest
+  pip:
+    name: setuptools
+    virtualenv: /opt/stack/venv
+    state: latest
 
 - name: Checkout OpenStack client and depends from Git
-  git: repo=https://git.openstack.org/openstack/{{ item }} dest=/opt/stack/{{ item }}
+  git:
+    repo: https://git.openstack.org/openstack/{{ item }}
+    dest: /opt/stack/{{ item }}
   with_items:
     - python-openstackclient
     - python-cinderclient
@@ -49,7 +64,9 @@
     - python-novaclient
 
 - name: Checkout sqlalchemy-migrate from Git
-  git: repo=https://github.com/stackforge/sqlalchemy-migrate dest=/opt/stack/sqlalchemy-migrate
+  git:
+    repo: https://github.com/stackforge/sqlalchemy-migrate
+    dest: /opt/stack/sqlalchemy-migrate
 
 - name: Install sqlalchemy-migrate from git
   command: /opt/stack/venv/bin/python setup.py install
@@ -57,8 +74,8 @@
     chdir: /opt/stack/sqlalchemy-migrate
 
 - name: Ensure requirements are installed
-  pip: requirements=/opt/stack/{{ item }}/requirements.txt
-  args:
+  pip:
+    requirements: /opt/stack/{{ item }}/requirements.txt
     virtualenv: /opt/stack/venv
   with_items:
     - python-keystoneclient

@@ -16,12 +16,12 @@
   sudo: yes
 
 - name: Set preferred ntp server
-  lineinfile: >
-    dest=/etc/ntp.conf
-    insertafter="^# Specify one or more NTP servers."
-    regexp="^server {{ preferred_ntp_server }}"
-    line="server {{ preferred_ntp_server }}"
-    state=present
+  lineinfile:
+    dest: /etc/ntp.conf
+    insertafter: "^# Specify one or more NTP servers."
+    regexp: "^server {{ preferred_ntp_server }}"
+    line: "server {{ preferred_ntp_server }}"
+    state: present
   notify:
     - stop ntp service
     - update date with ntp
@@ -30,18 +30,17 @@
   when: preferred_ntp_server is defined
 
 - name: Update hosts file
-  lineinfile: >
-    dest=/etc/hosts
-    regexp='{{ item.hostname }}$'
-    line='{{ item.ip }} {{ item.hostname }}'
-    state=present
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '{{ item.hostname }}$'
+    line: '{{ item.ip }} {{ item.hostname }}'
+    state: present
   with_items: openstack_nodes
   sudo: yes
 
 - name: Set Time Zone
-  copy:
-  args:
-    content: "{{ preferred_timezone }}"
+  template:
+    src: timezone
     dest: /etc/timezone
     owner: root
     group: root
