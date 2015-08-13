@@ -1,0 +1,21 @@
+---
+# This playbook exists just to have Vagrant generate an inventory file
+- hosts: all-nodes
+  tasks:
+    - name: Place holder
+      command: echo "Hello, world!"
+
+- hosts: keystone-idp
+  tasks:
+    - name: Place holder
+      command: echo "Hello, world!"
+
+- hosts: keystone-sp
+  tasks:
+    - name: Place holder
+      command: echo "Hello, world!"
+
+- hosts: tester
+  tasks:
+    - name: Place holder
+      command: echo "Hello, world!"
