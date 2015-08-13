@@ -4,7 +4,7 @@
   sudo: yes
 
 - name: install IdP requirements
-  apt: pkg={{ item }} state=latest
+  apt: pkg={{ item }} state=present
   with_items:
     - xmlsec1
   sudo: yes
@@ -16,7 +16,12 @@
   sudo: yes
 
 - name: make keystone ssl dir
-  file: path=/etc/keystone/ssl owner=root group=root mode=0644 state=directory
+  file:
+    path: /etc/keystone/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
   sudo: yes
 
 - name: make keystone ssl key
@@ -35,7 +40,6 @@
 
 - name: add keystone-ssl.conf to apache2 sites
   copy:
-  args:
     src: keystone-ssl.conf
     dest: /etc/apache2/sites-available/
     owner: root
@@ -51,7 +55,6 @@
 
 - name: Setup SAML certfile in keystone.conf
   replace:
-  args:
     replace: "# Path of the certfile for SAML signing. For non-production environments, you\n# may be interested in using `keystone-manage pki_setup` to generate self-\n# signed certificates. Note, the path cannot contain a comma. (string value)\ncertfile = /etc/keystone/ssl/idp.cer"
     regexp: '^\s*#\s*Path of the certfile for SAML signing. For non-production environments, you\s*[\n\r]\s*#\s*may be interested in using `keystone-manage pki_setup` to generate self-\s*[\n\r]\s*#\s*signed certificates. Note, the path cannot contain a comma. \(string value\)\s*[\n\r]\s*#?\s*certfile = /etc/keystone/ssl/certs/signing_cert.pem'
     dest: /etc/keystone/keystone.conf
@@ -59,7 +62,6 @@
 
 - name: Setup SAML keyfile in keystone.conf
   replace:
-  args:
     replace: "# Path of the keyfile for SAML signing. Note, the path cannot contain a comma.\n# (string value)\nkeyfile = /etc/keystone/ssl/idp.key"
     regexp: ^\s*#\s*Path of the keyfile for SAML signing. Note, the path cannot contain a comma.\s*[\n\r]\s*#\s*\(string value\)\s*[\n\r]\s*#?\s*keyfile = /etc/keystone/ssl/private/signing_key.pem'
     dest: /etc/keystone/keystone.conf
@@ -67,12 +69,12 @@
 
 - name: Setup SAML idp_entity_id in keystone.conf
   replace:
-  args:
     replace: "# Entity ID value for unique Identity Provider identification. Usually FQDN is\n# set with a suffix. A value is required to generate IDP Metadata. For example:\n# https://keystone.example.com/v3/OS-FEDERATION/saml2/idp (string value)\nidp_entity_id = https://{{ node_hostname }}/v3/OS-FEDERATION/saml2/idp"
     regexp: '^\s*# Entity ID value for unique Identity Provider identification. Usually FQDN is\s*[\n\r]\s*#\s*set with a suffix. A value is required to generate IDP Metadata. For example:\s*[\n\r]\s*#\s*https://keystone.example.com/v3/OS-FEDERATION/saml2/idp \(string value\)\s*#?\s*idp_entity_id = <None>'
     dest: /etc/keystone/keystone.conf
   sudo: yes
 
+# Need the > because of the ': ' in the replace stanza
 - name: Setup SAML idp_sso_endpoint in keystone.conf
   replace: >
     replace="# Identity Provider Single-Sign-On service value, required in the Identity\n# Provider's metadata. A value is required to generate IDP Metadata. For\n# example:{{ ' ' }}https://keystone.example.com/v3/OS-FEDERATION/saml2/sso (string\n# value)\nidp_sso_endpoint = https://{{ node_hostname }}/v3/OS-FEDERATION/saml2/sso"
@@ -82,7 +84,6 @@
 
 - name: Setup SAML idp_organization_name in keystone.conf
   replace:
-  args:
     replace: "# Organization name the installation belongs to. (string value)\nidp_organization_name = {{ idp_organization_name }}"
     regexp: '^\s*#\s*Organization name the installation belongs to. \(string value\)\s*[\n\r]\s*#?\s*idp_organization_name = <None>'
     dest: /etc/keystone/keystone.conf
@@ -90,7 +91,6 @@
 
 - name: Setup SAML idp_organization_display_name in keystone.conf
   replace:
-  args:
     replace: "# Organization name to be displayed. (string value)\n#idp_organization_display_name = {{ idp_organization_display_name }}"
     regexp: '^\s*#\s*Organization name to be displayed. \(string value\)\s*[\n\r]\s*#?\s*idp_organization_display_name = <None>'
     dest: /etc/keystone/keystone.conf
@@ -98,7 +98,6 @@
 
 - name: Setup SAML idp_organization_url in keystone.conf
   replace:
-  args:
     replace: "# URL of the organization. (string value)\nidp_organization_url = {{ idp_organization_url }}"
     regexp: '^\s*#\s*URL of the organization. \(string value\)\s*[\n\r]\s*#?\s*idp_organization_url = <None>'
     dest: /etc/keystone/keystone.conf
@@ -106,7 +105,6 @@
 
 - name: Setup SAML idp_contact_company in keystone.conf
   replace:
-  args:
     replace: "# Company of contact person. (string value)\nidp_contact_company = {{ idp_contact_company }}"
     regexp: '^\s*#\s*Company of contact person. \(string value\)\s*[\n\r]\s*#?\s*idp_contact_company = <None>'
     dest: /etc/keystone/keystone.conf
@@ -114,7 +112,6 @@
 
 - name: Setup SAML idp_contact_name in keystone.conf
   replace:
-  args:
     replace: "# Given name of contact person (string value)\nidp_contact_name = {{ idp_contact_name }}"
     regexp: '^\s*#\s*Given name of contact person \(string value\)\s*[\n\r]\s*#?\s*idp_contact_name = <None>'
     dest: /etc/keystone/keystone.conf
@@ -122,7 +119,6 @@
 
 - name: Setup SAML idp_contact_surname in keystone.conf
   replace:
-  args:
     replace: "# Surname of contact person. (string value)\nidp_contact_surname = {{ idp_contact_surname }}"
     regexp: '^\s*#\s*Surname of contact person. \(string value\)\s*[\n\r]\s*#?\s*idp_contact_surname = <None>'
     dest: /etc/keystone/keystone.conf
@@ -130,7 +126,6 @@
 
 - name: Setup SAML idp_contact_email in keystone.conf
   replace:
-  args:
     replace: "# Email address of contact person. (string value)\nidp_contact_email = {{ idp_contact_email }}"
     regexp: '^\s*#\s*Email address of contact person. \(string value\)\s*[\n\r]\s*#?\s*idp_contact_email = <None>'
     dest: /etc/keystone/keystone.conf
@@ -138,7 +133,6 @@
 
 - name: Setup SAML idp_entity_id in keystone.conf
   replace:
-  args:
     replace: "# Path to the Identity Provider Metadata file. This file should be generated\n# with the keystone-manage saml_idp_metadata command. (string value)\nidp_metadata_path = /etc/keystone/saml2_idp_metadata.xml"
     regexp: '^\s*#\s*Path to the Identity Provider Metadata file. This file should be generated\s*[\n\r]\s*#\s*with the keystone-manage saml_idp_metadata command. \(string value\)\s*[\n\r]\s*#?\s*idp_metadata_path = /etc/keystone/saml2_idp_metadata.xml'
     dest: /etc/keystone/keystone.conf

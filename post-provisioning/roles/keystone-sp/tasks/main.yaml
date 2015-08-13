@@ -4,14 +4,13 @@
   sudo: yes
 
 - name: install shibboleth requirements
-  apt: pkg={{ item }} state=latest
+  apt: pkg={{ item }} state=present
   with_items:
     - libapache2-mod-shib2
   sudo: yes
 
 - name: Copy apache2 federation config file
   copy:
-  args:
    src: keystone-federation.conf
    dest: /etc/apache2/sites-available
    owner: root
@@ -20,7 +19,9 @@
   sudo: yes
 
 - name: Enable federation site
-  command: a2ensite keystone-federation creates=/etc/apache2/sites-enabled/keystone-federation.conf
+  command: a2ensite keystone-federation
+  args:
+    creates: /etc/apache2/sites-enabled/keystone-federation.conf
   sudo: yes
 
 - name: Enable required apache2 modules
@@ -31,12 +32,13 @@
   sudo: yes
 
 - name: generate Shibboleth keys
-  command: shib-keygen -y 5 creates=/etc/shibboleth/sp-key.pem
+  command: shib-keygen -y 5
+  args:
+    creates: /etc/shibboleth/sp-key.pem
   sudo: yes
 
 - name: Copy Shibboleth2.xml
   template:
-  args:
     src: shibboleth2.xml.j2
     dest: /etc/shibboleth/shibboleth2.xml
     owner: root
@@ -46,7 +48,6 @@
 
 - name: Copy attributes map xml
   copy:
-  args:
     src: attribute-map.xml
     dest: /etc/shibboleth/attribute-map.xml
     owner: root
@@ -56,19 +57,27 @@
 
 - name: enable SAML SSO debugging for shibd
   lineinfile:
-  args:
+    dest: /etc/shibboleth/shibd.logger
     line: "log4j.category.Shibboleth.SSO.SAML2=DEBUG, shibd_log"
     insertafter: EOF
     state: present
-    dest: /etc/shibboleth/shibd.logger
   sudo: yes
 
+# Need continuation style here due to use of regexp
 - name: uncomment OpenSAML decoder debugging
-  lineinfile: line="log4j.category.OpenSAML.MessageDecoder=DEBUG" regexp="^\s*#?\s*log4j.category.OpenSAML.MessageDecoder=DEBUG" state=present dest=/etc/shibboleth/shibd.logger
+  lineinfile: >-
+    dest=/etc/shibboleth/shibd.logger
+    line="log4j.category.OpenSAML.MessageDecoder=DEBUG"
+    regexp="^\s*#?\s*log4j.category.OpenSAML.MessageDecoder=DEBUG"
+    state=present
   sudo: yes
 
 - name: uncomment OpenSAML encoding debugging
-  lineinfile: line="log4j.category.OpenSAML.MessageEncoder=DEBUG" regexp="^\s*#?\s*log4j.category.OpenSAML.MessageEncoder=DEBUG" state=present dest=/etc/shibboleth/shibd.logger
+  lineinfile: >-
+    dest=/etc/shibboleth/shibd.logger
+    line="log4j.category.OpenSAML.MessageEncoder=DEBUG"
+    regexp="^\s*#?\s*log4j.category.OpenSAML.MessageEncoder=DEBUG"
+    state=present
   sudo: yes
 
 - name: Restart apache
