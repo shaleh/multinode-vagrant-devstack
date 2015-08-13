@@ -25,6 +25,7 @@ no_proxy_value = ENV["no_proxy"] + "," + make_no_proxy_list(nodes)
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box = "ubuntu/trusty64"
     config.ssh.forward_agent = true
+    config.ssh.insert_key = false
 
     # Iterate through entries in YAML file
     (0 .. nodes.length() - 1).each do |i|
