@@ -2,27 +2,28 @@
 - name: Ensure dependencies are met
   apt: pkg={{ item }} state=present
   with_items:
-    - build-essential
+    - tar
     - unzip
-    - wget
     - psmisc
     - lsof # useful when debugging
+    - git
+    - ntp
     - openssh-server
+    - wget
+    - curl
     - iputils-ping
     - tcpdump
-    - tar
-    - python-dev
-    - python-pip
-    - python-virtualenv
+    - build-essential
+    - gettext  # used for compiling message catalogs
+    - pkg-config
+    - libxml2-dev
+    - libxslt1-dev
     - libyaml-dev
     - libffi-dev
     - libssl-dev # for pyOpenSSL
-    - gettext  # used for compiling message catalogs
-    - pkg-config
-    - curl
-    - git
-    - ntp
-  register: depends_met
+    - python-dev
+    - python-pip
+    - python-virtualenv
   sudo: yes
 
 - name: Ensure stack dir exists
@@ -39,17 +40,15 @@
   args:
     creates: /opt/stack/venv/bin/python
 
-- name: Upgrade pip
+- name: Ensure python modules are installed
   pip:
-    name: pip
+    name: {{ item }}
     virtualenv: /opt/stack/venv
     state: latest
-
-- name: Update setuptools
-  pip:
-    name: setuptools
-    virtualenv: /opt/stack/venv
-    state: latest
+  with_items:
+    - pip
+    - setuptools
+    - lxml  # needed for saml2
 
 - name: Checkout OpenStack client and depends from Git
   git:
@@ -90,6 +89,7 @@
   command: /opt/stack/venv/bin/python setup.py develop
   args:
     chdir: /opt/stack/{{ item }}
+    creates: /opt/stack/venv/lib/python2.7/site-packages/{{ item }}.egg-link
   with_items:
     - python-keystoneclient
     - python-cinderclient
@@ -97,3 +97,18 @@
     - python-neutronclient
     - python-novaclient
     - python-openstackclient
+
+- name: make /etc/opnstack
+  file:
+    path: /etc/openstack
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+  sudo: yes
+
+- name: Create clouds.yaml
+  template:
+    src: clouds.yaml.j2
+    dest: /etc/openstack/clouds.yaml
+  sudo: yes
