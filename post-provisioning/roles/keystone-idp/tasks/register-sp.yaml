@@ -1,21 +1,56 @@
 ---
 - name: check for registered SP
   uri:
-     url: "http://{{ node_hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ item.cloud }}"
+     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ item.cloud }}"
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
-  register: "{{ item.name }}_registered_on_{{ node_hostname }}"
   with_items: "{{ openstack_nodes|byattr('role', 'keystone-sp') }}"
+  register: registered_sps
 
+- name: Debug SP
+  local_action: shell echo "{{ item }}"
+  when: "{{ item.json.error is defined }}"
+  with_items: "{{ registered_sps.results }}"
+
+# The loop variable contains the results from the check above and have the form:
+# Error, missing SP
+# { 'status': 404,
+#   'content_length': 102,
+#   'changed': False,
+#   'vary': 'X-Auth-Token',
+#   'x_openstack_request_id': 'req-d132e663-4321-406d-8b1b-2c048e6139b8',
+#   'item': <node data from nodes.yaml>, this is the capture item from above,
+#   'json': {'error': {'message': <msg>, 'code': 404, 'title': 'Not Found'}},
+#   'content_type': 'application/json',
+#   'invocation': {'module_name': u'uri', 'module_args': ''},
+#   'date': 'Wed, 19 Aug 2015 00:04:48 GMT',
+#   'redirected': False,
+#   'server': 'Apache/2.4.7 (Ubuntu)'
+# }
+# Success
+# { 'status': 200,
+#   'content_length': 102,
+#   'changed': False,
+#   'vary': 'X-Auth-Token',
+#   'x_openstack_request_id': 'req-d132e663-4321-406d-8b1b-2c048e6139b8',
+#   'item': <node data from nodes.yaml>, this is the capture item from above,
+#   'json': {},
+#   'content_type': 'application/json',
+#   'invocation': {'module_name': u'uri', 'module_args': ''},
+#   'date': 'Wed, 19 Aug 2015 00:04:48 GMT',
+#   'redirected': False,
+#   'server': 'Apache/2.4.7 (Ubuntu)'
+# }
 - name: register SP
   uri:
-     url: "http://{{ node_hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ item.cloud }}"
+     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ item.item.cloud }}"
      method: PUT
-     body: "{ \"service_provider\": {\"auth_url\": \"http://{{ item.hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.cloud }}/protocols/saml2/auth\", \"sp_url\": \"https://{{ item.hostname }}:5000/Shibboleth.sso/SAML2/ECP\", \"enabled\": true} }"
+     body: '{ "service_provider": {"auth_url": "http://{{ item.item.hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}/protocols/saml2/auth", "sp_url": "https://{{ item.item.hostname }}:5000/Shibboleth.sso/SAML2/ECP", "enabled": true}, "_hack": null }'
      body_format: json
      HEADER_X-Auth-Token: "password"
      HEADER_Content-Type: "application/json"
      status_code: 201
-  when: "{{ item.name }}_registered_on_{{ node_hostname }}.error is defined"
-  with_items: "{{ openstack_nodes|byattr('role', 'keystone-sp') }}"
+     validate_certs: no
+  when: "{{ item.status == 404 }}"
+  with_items: "{{ registered_sps.results }}"
