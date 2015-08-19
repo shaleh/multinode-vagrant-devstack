@@ -1,0 +1,8 @@
+---
+- hosts: keystone-idp
+  roles:
+    - unstack
+
+- hosts: keystone-sp
+  roles:
+    - unstack
