@@ -53,6 +53,12 @@
     creates: /etc/apache2/sites-enabled/keystone-ssl.conf
   sudo: yes
 
+- name: generate keys for xmlsec1
+  command: keystone-manage pki_setup
+  args:
+    creates: /etc/keystone/ssl/private/signing_key.pem
+  sudo: yes
+
 - name: Setup SAML certfile in keystone.conf
   replace:
     replace: "# Path of the certfile for SAML signing. For non-production environments, you\n# may be interested in using `keystone-manage pki_setup` to generate self-\n# signed certificates. Note, the path cannot contain a comma. (string value)\ncertfile = /etc/keystone/ssl/idp.cer"

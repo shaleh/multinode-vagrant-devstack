@@ -21,3 +21,7 @@
 - hosts: keystone-idp
   tasks:
     - include: roles/keystone-idp/tasks/register-sp.yaml
+
+- hosts: keystone-sp
+  tasks:
+    - include: roles/keystone-sp/tasks/register-idp.yaml
