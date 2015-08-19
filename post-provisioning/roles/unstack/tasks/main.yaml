@@ -1,0 +1,5 @@
+---
+- name: unstack
+  command: ./unstack.sh
+  args:
+    chdir: /home/vagrant/devstack
