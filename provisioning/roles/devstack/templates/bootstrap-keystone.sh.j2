@@ -5,34 +5,39 @@ OS_TOKEN="{{ openstack_token }}"
 OS_CLOUD="{{ node_cloud }}"
 
 #Create couple of roles
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create domain_admin
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create project_admin
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create project_user
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create domain_user
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create cloud_admin
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create admin
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create domain_admin
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create project_admin
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create project_user
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create domain_user
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create cloud_admin
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role create admin
 
 #Create a domain
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} domain create domain_${OS_CLOUD}_1
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} domain create domain_${OS_CLOUD}_1
 
 #Create users
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} user create user_${OS_CLOUD}_A_U1 --domain domain_${OS_CLOUD}_1  --password password
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} user create user_${OS_CLOUD}_A_U2 --domain domain_${OS_CLOUD}_1  --password password
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} user create user_${OS_CLOUD}_A_U1 --domain domain_${OS_CLOUD}_1  --password password
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} user create user_${OS_CLOUD}_A_U2 --domain domain_${OS_CLOUD}_1  --password password
+
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} group create --domain domain_${OS_CLOUD}_1 --description "Group1 for ${OS_CLOUD}" group_${OS_CLOUD}_1
 
 #Create project
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} project create project_${OS_CLOUD}_1 --domain domain_${OS_CLOUD}_1
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} project create project_${OS_CLOUD}_2 --domain domain_${OS_CLOUD}_1
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} project create project_${OS_CLOUD}_1 --domain domain_${OS_CLOUD}_1
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} project create project_${OS_CLOUD}_2 --domain domain_${OS_CLOUD}_1
 
 # Use user_id for --user as this openstack client is buggy. If you have two users with same name in two different domain then the following
 # command won't work. user_id will work. Same comment  is also applicable for projects.
 
 #Assign domain roles
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U1 --domain domain_${OS_CLOUD}_1 domain_admin
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --domain domain_${OS_CLOUD}_1 domain_user
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U1 --domain domain_${OS_CLOUD}_1 domain_admin
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --domain domain_${OS_CLOUD}_1 domain_user
+
+# Assign group_${OS_CLOUD}_1 to domain_user role
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --group group_${OS_CLOUD}_1 --group-domain domain_${OS_CLOUD}_1 --domain domain_${OS_CLOUD}_1 domain_user
 
 #Assign project roles
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U1 --project project_${OS_CLOUD}_1 project_admin
-openstack --os-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --project project_${OS_CLOUD}_2 project_user
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U1 --project project_${OS_CLOUD}_1 project_admin
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --project project_${OS_CLOUD}_2 project_user
 
 # #Get a token
-# openstack --os-auth-url http://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-username user_AU1 --os-user-domain-name domain_${OS_CLOUD}_1 --os-project-name project_${OS_CLOUD}_1 --os-project-domain-name domain_${OS_CLOUD}_1  --os-password password token issue
+# openstack --os-auth-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-username user_AU1 --os-user-domain-name domain_${OS_CLOUD}_1 --os-project-name project_${OS_CLOUD}_1 --os-project-domain-name domain_${OS_CLOUD}_1  --os-password password token issue
