@@ -39,5 +39,9 @@ openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3
 openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U1 --project project_${OS_CLOUD}_1 project_admin
 openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --project project_${OS_CLOUD}_2 project_user
 
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} endpoint create --region RegionOne identity admin https://${KEYSTONE_HOST}:35357/v3
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} endpoint create --region RegionOne identity public https://${KEYSTONE_HOST}:35357/v3
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} endpoint create --region RegionOne identity internal https://${KEYSTONE_HOST}:35357/v3
+
 # #Get a token
 # openstack --os-auth-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-username user_AU1 --os-user-domain-name domain_${OS_CLOUD}_1 --os-project-name project_${OS_CLOUD}_1 --os-project-domain-name domain_${OS_CLOUD}_1  --os-password password token issue
