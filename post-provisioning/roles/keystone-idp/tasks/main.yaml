@@ -53,12 +53,6 @@
     creates: /etc/apache2/sites-enabled/keystone-ssl.conf
   sudo: yes
 
-- name: generate keys for xmlsec1
-  command: keystone-manage pki_setup
-  args:
-    creates: /etc/keystone/ssl/private/signing_key.pem
-  sudo: yes
-
 - name: Setup SAML certfile in keystone.conf
   replace:
     replace: "# Path of the certfile for SAML signing. For non-production environments, you\n# may be interested in using `keystone-manage pki_setup` to generate self-\n# signed certificates. Note, the path cannot contain a comma. (string value)\ncertfile = /etc/keystone/ssl/idp.cer"
@@ -141,6 +135,13 @@
   replace:
     replace: "# Path to the Identity Provider Metadata file. This file should be generated\n# with the keystone-manage saml_idp_metadata command. (string value)\nidp_metadata_path = /etc/keystone/saml2_idp_metadata.xml"
     regexp: '^\s*#\s*Path to the Identity Provider Metadata file. This file should be generated\s*[\n\r]\s*#\s*with the keystone-manage saml_idp_metadata command. \(string value\)\s*[\n\r]\s*#?\s*idp_metadata_path = /etc/keystone/saml2_idp_metadata.xml'
+    dest: /etc/keystone/keystone.conf
+  sudo: yes
+
+- name: Setup SAML signing key in keystone.conf
+  replace:
+    replace: '# Path of the keyfile for SAML signing. Note, the path cannot contain a comma.\n# (string value)#\nkeyfile = /etc/keystone/ssl/idp.key'
+    regexp: '^\s*#\s*Path of the keyfile for SAML signing. Note, the path cannot contain a comma.\s*[\n\r]\s*#\s*\(string value\)\s*[\n\r]\s*#?\s*keyfile\s*=\s*/etc/keystone/ssl/private/signing_key.pem'
     dest: /etc/keystone/keystone.conf
   sudo: yes
 
