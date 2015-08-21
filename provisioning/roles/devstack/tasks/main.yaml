@@ -15,6 +15,7 @@
     dest: /home/vagrant/.profile
     regexp: ".*openrc"
     line: '. /home/vagrant/devstack/openrc'
+    state: present
 
 - name: place bootstrap script
   template:
@@ -27,6 +28,19 @@
   args:
     chdir: /home/vagrant/devstack
     creates: /home/vagrant/devstack/stack-screenrc
+
+- name: Update identity and service providers policy
+  lineinfile:
+    dest: /etc/keystone/policy.json
+    regexp: '^(\s*)"identity:{{ item }}": "rule:admin_required",\s*$'
+    line: '\1"identity:{{ item }}": "",'
+    state: present
+  with_items:
+    - "list_identity_providers"
+    - "get_identity_provider"
+    - "list_service_providers"
+    - "get_service_provider"
+  sudo: yes
 
 - name: bootstrap keystone
   command: /home/vagrant/bootstrap-keystone.sh
