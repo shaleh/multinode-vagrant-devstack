@@ -34,10 +34,11 @@
     dest: /etc/keystone/policy.json
     regexp: '^(\s*)"identity:{{ item }}": "rule:admin_required",\s*$'
     line: '\1"identity:{{ item }}": "",'
+    backrefs: yes
     state: present
   with_items:
     - "list_identity_providers"
-    - "get_identity_provider"
+    - "get_identity_providers"
     - "list_service_providers"
     - "get_service_provider"
   sudo: yes
