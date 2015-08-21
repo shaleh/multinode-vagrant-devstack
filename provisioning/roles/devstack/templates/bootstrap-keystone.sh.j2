@@ -30,7 +30,7 @@ openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3
 
 #Assign domain roles
 openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U1 --domain domain_${OS_CLOUD}_1 domain_admin
-openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --domain domain_${OS_CLOUD}_1 domain_user
+openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --user user_${OS_CLOUD}_A_U2 --domain domain_${OS_CLOUD}_1 domain_user --inherited
 
 # Assign group_${OS_CLOUD}_1 to domain_user role
 openstack --os-url https://${KEYSTONE_HOST}:35357/v3 --os-identity-api-version 3 --os-token=${OS_TOKEN} role add --group group_${OS_CLOUD}_1 --group-domain domain_${OS_CLOUD}_1 --domain domain_${OS_CLOUD}_1 domain_user
