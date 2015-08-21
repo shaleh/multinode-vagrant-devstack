@@ -42,7 +42,7 @@
 
 - name: Ensure python modules are installed
   pip:
-    name: {{ item }}
+    name: "{{ item }}"
     virtualenv: /opt/stack/venv
     state: latest
   with_items:
