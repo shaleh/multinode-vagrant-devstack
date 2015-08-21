@@ -1,0 +1,29 @@
+{
+    "mapping": {
+        "rules": [
+            {
+                "local": [
+                    {
+                        "user": {
+                            "name": "{0}"
+                        }
+                    },
+                    {
+                        "group": {
+                            "name": "group_{{ node_cloud }}_1",
+                            "domain": {
+                                "name": "domain_{{ node_cloud }}_1"
+                            }
+                        }
+                    }
+                ],
+                "remote": [
+                    {
+                        "type": "openstack_user"
+                    }
+                ]
+            }
+        ]
+    },
+    "_hack": null  # Needed so ansible does not turn this into a dict
+}

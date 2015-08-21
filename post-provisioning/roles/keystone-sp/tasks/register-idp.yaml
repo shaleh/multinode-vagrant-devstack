@@ -11,8 +11,7 @@
   uri:
     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/mappings/{{ item.item.cloud }}"
     method: PUT
-    body: '{ "mapping": { "rules": [{ "local": [{"user": {"name": "{0}"} }, { "group": { "name": "group_{{ node_cloud }}_1", "domain": { "name": "domain_{{ node_cloud }}_1"} } }], "remote": [{"type": "openstack_user"}]}]}, "_hack": null }'
-    # body: "{{ lookup('template', 'mapping.json.j2') }}"
+    body: "{{ lookup('template', 'mapping.json.j2') }}"
     body_format: json
     HEADER_X-Auth-Token: "password"
     HEADER_Content-Type: "application/json"
@@ -34,8 +33,7 @@
   uri:
      url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}"
      method: PUT
-     body: '{ "identity_provider": { "description": "IdP for {{ item.item.cloud }}.", "enabled": true} }'
-     #body: "{{ lookup('template', 'register-idp.json.j2') }}"
+     body: "{{ lookup('template', 'register-idp.json.j2') }}"
      body_format: json
      HEADER_X-Auth-Token: "password"
      HEADER_Content-Type: "application/json"
@@ -57,8 +55,7 @@
   uri:
     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}/protocols/saml2"
     method: PUT
-    body: '{ "protocol": { "mapping_id": "{{ item.item.cloud }}-mapping"}, "_hack": null }'
-    #body: "{{ lookup('template', 'register-idp-saml.json.j2') }}"
+    body: "{{ lookup('template', 'register-idp-saml.json.j2') }}"
     body_format: json
     HEADER_X-Auth-Token: "password"
     HEADER_Content-Type: "application/json"
