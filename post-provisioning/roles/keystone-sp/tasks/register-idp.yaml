@@ -4,6 +4,7 @@
     method: GET
     HEADER_X-Auth-Token: "password"
     status_code: [200, 404]
+    validate_certs: no
   with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
   register: mappings_for_idps
 
@@ -26,6 +27,7 @@
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
+     validate_certs: no
   with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
   register: registered_idps
 
@@ -48,6 +50,7 @@
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
+     validate_certs: no
   with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
   register: registered_saml_idps
 
