@@ -5,6 +5,7 @@
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
+     validate_certs: no
   with_items: "{{ openstack_nodes|byattr('role', 'keystone-sp') }}"
   register: registered_sps
 
