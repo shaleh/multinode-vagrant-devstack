@@ -8,6 +8,7 @@
   with_items:
     - libapache2-mod-shib2
   sudo: yes
+  notify: Restart apache
 
 - name: Copy apache2 federation config file
   copy:
@@ -23,6 +24,7 @@
   args:
     creates: /etc/apache2/sites-enabled/keystone-federation.conf
   sudo: yes
+  notify: Restart apache
 
 - name: Enable required apache2 modules
   apache2_module: name={{ item }} state=present
@@ -30,12 +32,14 @@
     - ssl
     - shib2
   sudo: yes
+  notify: Restart apache
 
 - name: generate Shibboleth keys
   command: shib-keygen -y 5
   args:
     creates: /etc/shibboleth/sp-key.pem
   sudo: yes
+  notify: Restart shibd
 
 - name: Copy Shibboleth2.xml
   template:
@@ -45,6 +49,7 @@
     group: root
     mode: 0644
   sudo: yes
+  notify: Restart shibd
 
 - name: Copy attributes map xml
   copy:
@@ -54,6 +59,7 @@
     group: root
     mode: 0644
   sudo: yes
+  notify: Restart shibd
 
 - name: enable SAML SSO debugging for shibd
   lineinfile:
@@ -62,6 +68,7 @@
     insertafter: EOF
     state: present
   sudo: yes
+  notify: Restart shibd
 
 # Need continuation style here due to use of regexp
 - name: uncomment OpenSAML decoder debugging
@@ -71,6 +78,7 @@
     regexp="^\s*#?\s*log4j.category.OpenSAML.MessageDecoder=DEBUG"
     state=present
   sudo: yes
+  notify: Restart shibd
 
 - name: uncomment OpenSAML encoding debugging
   lineinfile: >-
@@ -79,11 +87,6 @@
     regexp="^\s*#?\s*log4j.category.OpenSAML.MessageEncoder=DEBUG"
     state=present
   sudo: yes
+  notify: Restart shibd
 
-- name: Restart apache
-  service: name=apache2 state=restarted
-  sudo: yes
-
-- name: Restart shibd
-  service: name=shibd state=restarted
-  sudo: yes
+meta: flush_handlers

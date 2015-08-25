@@ -6,6 +6,7 @@
     regexp="^\s*# Entrypoint for the federation backend driver in the keystone.federation\s*[\n\r]\s*# namespace. \(string value\)\s*[\n\r]\s*#?\s*driver\s*=\s*sql\s*$"
     replace="# Entrypoint for the federation backend driver in the keystone.federation\n# namespace. (string value)\ndriver = keystone.contrib.federation.backends.sql.Federation"
   sudo: yes
+  notify: Restart apache
 
 - name: Update keystone auth section
   replace: >-
@@ -13,6 +14,7 @@
     regexp="^\s*#\s*Allowed authentication methods. \(list value\)\s*[\n\r]\s*#?\s*methods\s*=\s*\s*external,password,token,oauth1\s*$"
     replace="# Allowed authentication methods. (list value)\nmethods = external,password,token,saml2\n"
   sudo: yes
+  notify: Restart apache
 
 - name: add SAML2 to auth section
   lineinfile: >-
@@ -21,6 +23,7 @@
     line="saml2 = keystone.auth.plugins.mapped.Mapped"
     state=present
   sudo: yes
+  notify: Restart apache
 
 - name: Ensure federation is in the pipeline:api_v3
   replace: >-
@@ -28,6 +31,7 @@
     regexp="^\s*\[pipeline:api_v3\]\s*[\n\r]\s*#\s*The last item in this pipeline must be service_v3 or an equivalent\s*[\n\r]\s*#\s*application. It cannot be a filter.\s*[\n\r]\s*pipeline\s*=\s*(?!sizelimit url_normalize request_id build_auth_context token_auth admin_token_auth json_body ec2_extension_v3 s3_extension simple_cert_extension revoke_extension federation_extension oauth1_extension endpoint_filter_extension endpoint_policy_extension service_v3)\s[\n\r]"
     replace="[pipeline:api_v3]\n# The last item in this pipeline must be service_v3 or an equivalent\n# application. It cannot be a filter.\npipeline = sizelimit url_normalize request_id build_auth_context token_auth admin_token_auth json_body ec2_extension_v3 s3_extension simple_cert_extension revoke_extension federation_extension oauth1_extension endpoint_filter_extension endpoint_policy_extension service_v3\n"
   sudo: yes
+  notify: Restart apache
 
 - name: Check for federation tables
   shell: echo "show tables;" | mysql -u root --password=password keystone | grep -q 'service_provider'
