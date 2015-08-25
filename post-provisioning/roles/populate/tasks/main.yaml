@@ -1,0 +1,9 @@
+---
+- name: place bootstrap script
+  template:
+    src: bootstrap-keystone.sh.j2
+    dest: /home/vagrant/bootstrap-keystone.sh
+    mode: 0755
+
+- name: Populate domains, groups, projects, and users
+  command: /home/vagrant/bootstrap-keystone.sh
