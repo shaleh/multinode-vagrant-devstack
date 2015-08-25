@@ -36,3 +36,11 @@
     - "list_service_providers"
     - "get_service_provider"
   sudo: yes
+
+- name: Setup Mercador router
+  ini_file:
+    dest: /etc/keystone/keystone-paste.ini
+    section: 'filter:mercador_extension'
+    option: 'paste.filter_factory'
+    value: 'keystone.contrib.mercador.routers:MercadorRouter.factory'
+  sudo: yes
