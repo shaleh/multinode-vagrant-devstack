@@ -17,12 +17,6 @@
     line: '. /home/vagrant/devstack/openrc'
     state: present
 
-- name: place bootstrap script
-  template:
-    src: bootstrap-keystone.sh.j2
-    dest: /home/vagrant/bootstrap-keystone.sh
-    mode: 0755
-
 - name: run devstack
   shell: ./stack.sh >> /home/vagrant/stack.sh.log 2>&1
   args:
@@ -42,6 +36,3 @@
     - "list_service_providers"
     - "get_service_provider"
   sudo: yes
-
-- name: bootstrap keystone
-  command: /home/vagrant/bootstrap-keystone.sh
