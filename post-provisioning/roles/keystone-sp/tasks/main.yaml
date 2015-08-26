@@ -89,4 +89,4 @@
   sudo: yes
   notify: Restart shibd
 
-meta: flush_handlers
+- meta: flush_handlers
