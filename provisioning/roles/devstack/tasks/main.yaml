@@ -44,3 +44,11 @@
     option: 'paste.filter_factory'
     value: 'keystone.contrib.mercador.routers:MercadorRouter.factory'
   sudo: yes
+
+- name: Setup Mercador Auth
+  ini_file:
+    dest: /etc/keystone/keystone-paste.ini
+    section: 'filter:mercador_auth'
+    option: 'use'
+    value: 'egg:keystone#mercador_auth'
+  sudo: yes
