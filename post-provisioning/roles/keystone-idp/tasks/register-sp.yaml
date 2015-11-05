@@ -1,7 +1,7 @@
 ---
 - name: check for registered SP
   uri:
-     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ item.cloud }}"
+     url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/service_providers/{{ item.cloud }}"
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
@@ -40,7 +40,7 @@
 # }
 - name: register SP
   uri:
-     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/service_providers/{{ item.item.cloud }}"
+     url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/service_providers/{{ item.item.cloud }}"
      method: PUT
      body: "{{ lookup('template', 'register-sp.json.j2') }}"
      body_format: json

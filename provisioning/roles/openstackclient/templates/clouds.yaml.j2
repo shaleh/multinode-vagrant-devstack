@@ -2,13 +2,13 @@
 clouds:
 {% for node in openstack_nodes %}
 {% if node.cloud is defined %}
-   {{ node.cloud }}:
+   {{ node.cloud }}-admin:
       username: admin
       password: password
       identity_api_version: "3"
       project_domain_id: default
       user_domain_id: default
       project_name: admin
-      auth_url: https://{{ node.hostname }}:35357/v3
+      auth_url: https://{{ node.hostname }}:5000/v3
 {% endif %}
 {% endfor %}

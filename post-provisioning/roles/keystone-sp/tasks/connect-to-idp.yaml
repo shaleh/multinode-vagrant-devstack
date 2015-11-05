@@ -5,3 +5,4 @@
     creates: "/etc/shibboleth/idp-{{ item.hostname }}.xml"
   with_items: "{{ openstack_nodes|byattr('role', 'keystone-idp') }}"
   sudo: yes
+  notify: Restart shibd

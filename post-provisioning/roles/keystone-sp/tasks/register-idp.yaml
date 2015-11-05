@@ -1,6 +1,6 @@
 - name: Check mappings for IdP to SP
   uri:
-    url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/mappings/{{ item.cloud }}"
+    url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/mappings/{{ item.cloud }}"
     method: GET
     HEADER_X-Auth-Token: "password"
     status_code: [200, 404]
@@ -10,7 +10,7 @@
 
 - name: Put mapping for IdP to SP
   uri:
-    url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/mappings/{{ item.item.cloud }}"
+    url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/mappings/{{ item.item.cloud }}"
     method: PUT
     body: "{{ lookup('template', 'mapping.json.j2') }}"
     body_format: json
@@ -23,7 +23,7 @@
 
 - name: check for registered IdP
   uri:
-     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.cloud }}"
+     url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/identity_providers/{{ item.cloud }}"
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
@@ -33,7 +33,7 @@
 
 - name: register IdP with SP
   uri:
-     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}"
+     url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}"
      method: PUT
      body: "{{ lookup('template', 'register-idp.json.j2') }}"
      body_format: json
@@ -46,7 +46,7 @@
 
 - name: Check for IdP SAML registration
   uri:
-     url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.cloud }}/protocols/saml2"
+     url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/identity_providers/{{ item.cloud }}/protocols/saml2"
      method: GET
      HEADER_X-Auth-Token: "password"
      status_code: [200, 404]
@@ -56,7 +56,7 @@
 
 - name: register a SAML Protocol for the IDP in SP
   uri:
-    url: "https://{{ node_hostname }}:35357/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}/protocols/saml2"
+    url: "https://{{ node_hostname }}:5000/v3/OS-FEDERATION/identity_providers/{{ item.item.cloud }}/protocols/saml2"
     method: PUT
     body: "{{ lookup('template', 'register-idp-saml.json.j2') }}"
     body_format: json
