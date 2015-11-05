@@ -1,0 +1,4 @@
+---
+- hosts: keystone-idp:keystone-sp
+  roles:
+    - populate

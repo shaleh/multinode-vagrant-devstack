@@ -1,5 +1,16 @@
 [[local|localrc]]
+# avoid git:// to work around proxies
 GIT_BASE=https://git.openstack.org
+USE_SSL="True"
+
+# Use the mercador repos and mercador-poc branch
+KEYSTONE_REPO=https://github.com/mercador/keystone.git
+KEYSTONE_BRANCH=mercador-poc
+KEYSTONECLIENT_REPO=https://github.com/mercador/python-keystoneclient.git
+KEYSTONECLIENT_BRANCH=mercador-poc
+OPENSTACKCLIENT_REPO=https://github.com/mercador/python-openstackclient.git
+OPENSTACKCLIENT_BRANCH=mercador-poc
+
 USE_SSL="True"
 
 # Default passwords
