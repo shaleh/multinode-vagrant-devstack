@@ -4,6 +4,7 @@
     repo: "{{ devstack_repo }}"
     dest: /home/vagrant/devstack
     version: "{{ version }}"
+    update: no
 
 - name: local.conf
   template:
@@ -22,17 +23,3 @@
   args:
     chdir: /home/vagrant/devstack
     creates: /home/vagrant/devstack/stack-screenrc
-
-- name: Update identity and service providers policy
-  lineinfile:
-    dest: /etc/keystone/policy.json
-    regexp: '^(\s*)"identity:{{ item }}": "rule:admin_required",\s*$'
-    line: '\1"identity:{{ item }}": "",'
-    backrefs: yes
-    state: present
-  with_items:
-    - "list_identity_providers"
-    - "get_identity_providers"
-    - "list_service_providers"
-    - "get_service_provider"
-  sudo: yes
