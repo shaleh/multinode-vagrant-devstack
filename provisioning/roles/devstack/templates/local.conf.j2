@@ -18,13 +18,15 @@ LOGDAYS=2
 SERVICE_HOST={{ node_hostname }}
 HOST_IP={{ ansible_eth1.ipv4.address }}
 
-{% if keystone_type in ("idp", "sp") %}
+{% if keystone_type|default("stack") in ("idp", "sp") %}
 enable_service key-fed
 {% endif %}
 
 {% if horizon %}
 enable_service horizon
 {% endif %}
+
+CINDER_USE_MOD_WSGI=True
 
 {% if neutron %}
 #
